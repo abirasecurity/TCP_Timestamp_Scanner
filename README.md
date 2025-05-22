@@ -55,21 +55,69 @@ sudo python3 tcp_ts_scanner.py ip_list.txt
 ## Output Example
 
 ```
-[+] Loaded 3 IP addresses from ip_list.txt
+# Sample Output 1: Vulnerable Host
 
-[+] Scanning 192.168.1.1 at 2025-05-20 08:45:23 PM
+[+] Loaded 3 IP addresses from targets.txt
+
+[+] Scanning 192.168.1.1 at 2025-05-22 10:15:34 AM
 
 --- Complete hping3 Output ---
-using eth0, addr: 192.168.0.100, MTU: 1500
 HPING 192.168.1.1 (eth0 192.168.1.1): S set, 40 headers + 0 data bytes
-len=44 ip=192.168.1.1 ttl=64 DF id=0 sport=80 flags=SA seq=0 win=65535 rtt=1.2 ms
-TCP timestamp: tcpts=3204281767
-len=44 ip=192.168.1.1 ttl=64 DF id=0 sport=80 flags=SA seq=1 win=65535 rtt=1.0 ms
-TCP timestamp: tcpts=3204281768
+len=46 ip=192.168.1.1 ttl=64 DF id=0 sport=80 flags=SA seq=0 win=5840 rtt=2.3 ms
+TCP timestamp: tcpts=3845731200
+
+--- 192.168.1.1 hping statistic ---
+1 packets transmitted, 1 packets received, 0% packet loss
+round-trip min/avg/max = 2.3/2.3/2.3 ms
+--------------------
 
 --- Extracted TIMESTAMP Information ---
-TCP timestamp: tcpts=3204281767
-TCP timestamp: tcpts=3204281768
+TCP timestamp: tcpts=3845731200
+
+192.168.1.1 - VULNERABLE
+--------------------
+
+# Sample Output 2: Non-Vulnerable Host (Responds but no timestamp)
+
+[+] Scanning 10.0.0.25 at 2025-05-22 10:15:37 AM
+
+--- Complete hping3 Output ---
+HPING 10.0.0.25 (eth0 10.0.0.25): S set, 40 headers + 0 data bytes
+len=44 ip=10.0.0.25 ttl=64 DF id=0 sport=80 flags=SA seq=0 win=65535 rtt=1.8 ms
+
+--- 10.0.0.25 hping statistic ---
+1 packets transmitted, 1 packets received, 0% packet loss
+round-trip min/avg/max = 1.8/1.8/1.8 ms
+--------------------
+
+--- Extracted TIMESTAMP Information ---
+No TCP timestamp information found in the response
+
+10.0.0.25 - NOT VULNERABLE
+--------------------
+
+# Sample Output 3: Non-Vulnerable Host (No response)
+
+[+] Scanning 50.175.72.18 at 2025-05-22 10:15:40 AM
+
+--- Complete hping3 Output ---
+HPING 50.175.72.18 (eth0 50.175.72.18): S set, 40 headers + 0 data bytes
+
+--- 50.175.72.18 hping statistic ---
+1 packets transmitted, 0 packets received, 100% packet loss
+round-trip min/avg/max = 0.0/0.0/0.0 ms
+--------------------
+
+--- Extracted TIMESTAMP Information ---
+No response received from target
+
+50.175.72.18 - NOT VULNERABLE
+--------------------
+
+# Sample Output 4: Error Case
+
+[+] Scanning 256.0.0.1 at 2025-05-22 10:15:43 AM
+[-] Exception while scanning 256.0.0.1: Invalid IP address format
 ```
 
 ## Understanding TCP Timestamps
